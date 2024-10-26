@@ -40,12 +40,12 @@ class Game:
         self.window = pygame.display.set_mode((self.width, self.height))
         self.window.fill(0x111111)
 
-        self.rocket = GameObject('planets.png/Rocket Option 1.png', 0.0, 0.4e5)
+        self.rocket = GameObject('planets.png/Rocket_Option_1.png', 0.0, 0.4e5)
         self.rocket.color[1] = 255
         self.rocket.v[1] = -2.0e5
         self.objects = []
         self.objects.append(self.rocket)
-        self.objects.append(GameObject('planets.png/moon1.png', 1.3e5, 0.0, 4.87e24))
+        self.objects.append(GameObject('planets.png/white_circle.png', 1.3e5, 0.0, 4.87e24))
         # self.objects.append(GameObject('white_circle.png', -1.6e5, 0.0, 4.87e24))
 
     def render(self):
