@@ -1,4 +1,4 @@
-A space simulator that shwocases the gravitational pull the planets have on each other. It is customizable with features allowing users to add multiplt planets and rockets wherever, as well as having premade examples, including an preset where we used data from NASA Horizon's API to create a realtime representation of the solar system.
+A space simulator that shwocases the gravitational pull the planets have on each other. It is customizable with features allowing users to add multiplt planets and rockets wherever, as well as having premade examples, including preset "Solar" where we used data from NASA Horizon's API to create a realtime representation of the solar system.
 
 Controls:
 WASD - Move up, down, left, right
