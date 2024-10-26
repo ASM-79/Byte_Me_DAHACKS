@@ -132,8 +132,10 @@ class Game:
                 self.rocket_button_impl
         ]
         self.holded_callback = None
-        self.edit_obj = None
-        # planets = main()
+        # self.edit_obj = None
+        for key, vals in main().items():
+            self.objects.append(GameObject(key, vals[0].x, vals[0].y, vals[2], vals[3]))
+            self.objects[-1].v[0] = np.array([vals[1].x, vals[1].y])
         # if planets == None:
         #     return
         # for key, vals in planets.items():

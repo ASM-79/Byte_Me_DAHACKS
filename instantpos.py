@@ -114,12 +114,7 @@ def main():
             vy = (y2 - y1) / time_interval
 
             # Update final frame with position and velocity
-            final_frame[body_name] = {
-                "position": (x2, y2),
-                "velocity": (vx, vy),
-                "mass": mass,
-                "radius": radius
-            }
+            final_frame[body_name] = [x2, y2, vx, vy, mass, radius]
 
     # Print the final frame with approximate instantaneous velocity and position
     print(final_frame)  # Print output for verification
