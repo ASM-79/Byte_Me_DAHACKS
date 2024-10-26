@@ -5,6 +5,7 @@ WASD - Move up, down, left, right
 Space - Start and stop the simulation
 
 Credit Links : 
+
 Gravity Slingshot Tutorial
 https://www.youtube.com/watch?v=HTfwhmHVpqM&t=172s
 https://github.com/techwithtim/Slingshot-Effect-Simulation
@@ -15,3 +16,9 @@ https://www.youtube.com/watch?v=YQ1mixa9RAw&t=1s
 
 UI:
 https://www.youtube.com/watch?v=GMBqjxcKogA
+
+NASA Horizons API:
+https://ssd-api.jpl.nasa.gov/doc/horizons.html
+
+Chat GPT:
+https://chatgpt.com/
