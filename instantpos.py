@@ -23,8 +23,8 @@ def main():
     i = 0
     
     while i <= 1:
-        start_time = (current_time + timedelta(days=10 * i)).strftime("%Y-%m-%d %H:%M")
-        end_time = (current_time + timedelta(days=10 * i + 10)).strftime("%Y-%m-%d %H:%M")
+        start_time = (current_time + timedelta(days=1 * i)).strftime("%Y-%m-%d %H:%M")
+        end_time = (current_time + timedelta(days=1 * i + 1)).strftime("%Y-%m-%d %H:%M")
         
         params_template = {
             "format": "text",
@@ -34,7 +34,7 @@ def main():
             "CENTER": "'500@10'",
             "START_TIME": f"'{start_time}'",
             "STOP_TIME": f"'{end_time}'",
-            "STEP_SIZE": "'10 d'",
+            "STEP_SIZE": "'1 d'",
             "QUANTITIES": "'1,20,23'"
         }
 
@@ -76,24 +76,55 @@ def main():
 
         # Main loop to fetch data for each body
         for body_name, body_info in bodies.items():
-            params = params_template.copy()
-            params["COMMAND"] = f"'{body_info['code']}'"
-            
-            try:
-                response = requests.get(url, params=params)
-                if response.status_code == 200:
-                    coords = parse_and_convert(response.text)
-                    if coords:
-                        latest_coord = coords[-1]
-                        all_data[body_name] = [latest_coord[0], latest_coord[1], body_info["mass"], body_info["radius"]]
-                else:
-                    print(f"Failed to retrieve data for {body_name}: {response.status_code} - {response.text}")
-            except requests.RequestException as e:
-                print(f"An error occurred while requesting data for {body_name}: {e}")
+            if body_name == "Sun":
+                # Add Sun's coordinates as the origin point (0, 0)
+                all_data[body_name] = [0, 0, body_info["mass"], body_info["radius"]]
+            else:
+                params = params_template.copy()
+                params["COMMAND"] = f"'{body_info['code']}'"
+                
+                try:
+                    response = requests.get(url, params=params)
+                    if response.status_code == 200:
+                        coords = parse_and_convert(response.text)
+                        if coords:
+                            latest_coord = coords[-1]
+                            all_data[body_name] = [latest_coord[0], latest_coord[1], body_info["mass"], body_info["radius"]]
+                    else:
+                        print(f"Failed to retrieve data for {body_name}: {response.status_code} - {response.text}")
+                except requests.RequestException as e:
+                    print(f"An error occurred while requesting data for {body_name}: {e}")
 
-        frames.append(all_data.items())
+        frames.append(all_data)
         i += 1
-        for frame in frames:
-            for body_name, (x, y, mass, radius) in frame:
-                return (body_name, (x, y, mass, radius))
 
+    # Calculate velocity based on two frames
+    final_frame = {}
+    time_interval = 86400  # Time interval in seconds (1 day)
+
+    if len(frames) == 2:
+        frame1, frame2 = frames[0], frames[1]
+        
+        for body_name in bodies.keys():
+            x1, y1, mass, radius = frame1[body_name]
+            x2, y2, _, _ = frame2[body_name]
+
+            # Calculate velocity in each axis
+            vx = (x2 - x1) / time_interval
+            vy = (y2 - y1) / time_interval
+
+            # Update final frame with position and velocity
+            final_frame[body_name] = {
+                "position": (x2, y2),
+                "velocity": (vx, vy),
+                "mass": mass,
+                "radius": radius
+            }
+
+    # Print the final frame with approximate instantaneous velocity and position
+    for body, data in final_frame.items():
+        print(f"{body}: Position = {data['position']}, Velocity = {data['velocity']}, Mass = {data['mass']}, Radius = {data['radius']}")
+
+    return final_frame
+
+final_frame = main()
