@@ -2,8 +2,7 @@ import pygame
 import numpy as np
 import matplotlib.pyplot as plt
 
-METER = 0.0005
-SCALE = 1.0
+METER = 0.002
 
 def normalize(vec):
     d = vec[0] * vec[0] + vec[1] * vec[1]
@@ -21,33 +20,49 @@ class GameObject:
         self.image = pygame.transform.scale(self.image, (self.scale, self.scale))
 
     def render(self, game):
-        pos = (game.width / 2.0 + self.pos[0] * METER * SCALE, game.height / 2.0 - self.pos[1] * METER * SCALE)
+        pos = (game.width / 2.0 + self.pos[0] * METER, game.height / 2.0 - self.pos[1] * METER)
         # pygame.draw.circle(game.window, tuple(self.color), pos, self.scale)
         game.window.blit(self.image, pos)
+        self.render_v(game)
+
+    def render_v(self, game):
+        pos = (game.width / 2.0 + self.pos[0] * METER, game.height / 2.0 - self.pos[1] * METER)
+        epos = (game.width / 2.0 + (self.pos[0] + self.v[0] * 0.3) * METER, game.height / 2.0 - (self.pos[1] + self.v[1] * 0.3) * METER)
+        pygame.draw.line(game.window, (0, 0, 255), pos, epos, 2)
+
+    def render_a(self, game):
+        pos = (game.width / 2.0 + self.pos[0] * METER, game.height / 2.0 - self.pos[1] * METER)
+        epos = (game.width / 2.0 + (self.pos[0] + self.a[0] * 0.3) * METER, game.height / 2.0 - (self.pos[1] + self.a[1] * 0.3) * METER)
+        pygame.draw.line(game.window, (255, 0, 0), pos, epos, 2)
 
     def apply_physics(self, dt: float):
         # np.add(self.v, self.a * dt, out = self.v, casting='unsafe')
         # np.add(self.pos, self.v * dt, out = self.pos, casting='unsafe')
+        self.render_a(game)
         self.v += self.a * dt
         self.pos += self.v * dt
-        self.a = 0
+        self.a[0] = 0.0
+        self.a[1] = 0.0
 
 class Game:
     def __init__(self):
-        self.width = 640
-        self.height = 520
+        self.width = 960
+        self.height = 640
         self.running = True
+        self.mouse_pre = [0, 0]
+
         pygame.init()
         self.window = pygame.display.set_mode((self.width, self.height))
         self.window.fill(0x111111)
 
         self.rocket = GameObject('planets.png/Rocket Option 1.png', 0.0, 0.4e5)
         self.rocket.color[1] = 255
-        self.rocket.v[1] = -2.0e5
+        self.rocket.v[1] = -4.3e4
         self.objects = []
         self.objects.append(self.rocket)
         self.objects.append(GameObject('planets.png/moon1.png', 1.3e5, 0.0, 4.87e24))
-        # self.objects.append(GameObject('white_circle.png', -1.6e5, 0.0, 4.87e24))
+        self.objects.append(GameObject('planets.png/moon1.png', -1.2e5, -1.3e5, 4.7e24))
+        self.objects[-1].v[1] = 2.3e4
 
     def render(self):
         for i in range(1, len(self.objects)):
@@ -72,16 +87,20 @@ class Game:
             obj.apply_physics(dt)
 
     def eventhandle(self):
-        global SCALE
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 self.running = False
                 return
             if event.type == pygame.MOUSEBUTTONDOWN:
-                if event.button == 4: # up
-                    SCALE += 0.2;
-                elif event.button == 5: # down
-                    SCALE -= 0.2;
+                if event.button == 1: # Left
+                    mx, my = pygame.mouse.get_pos()
+                    self.rocket.pos[0] = (mx - game.width / 2.0) / METER
+                    self.rocket.pos[1] = (game.height / 2.0 - my) / METER
+                    self.rocket.v[0] = 0.0
+                    self.rocket.v[1] = 0.0
+                    self.rocket.a[0] = 0.0
+                    self.rocket.a[1] = 0.0
+
 
 game = Game()
 FPS = 60
