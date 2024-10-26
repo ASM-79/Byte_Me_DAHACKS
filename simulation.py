@@ -123,6 +123,7 @@ class Game:
         self.running = True
         self.start_simulation = False
         self.mouse_pre = [0, 0]
+        self.simulation_time = 0
 
         pygame.init()
         self.window = pygame.display.set_mode((self.width, self.height), pygame.RESIZABLE)
@@ -270,6 +271,12 @@ class Game:
         for slider in self.sliders:
             slider.render(self.window)
 
+        baseColor = "#61f255"
+        weeks =  self.simulation_time / (3600 * 24 * 7)
+        text = pygame.font.Font(None, 24).render(f'{weeks:.{2}f}' + 'w', True, baseColor)
+        text_rect = text.get_rect(center=(40, 200))
+        self.window.blit(text, text_rect)
+
         self.textBox.render(self.window)
 
     def render(self):
@@ -299,6 +306,7 @@ class Game:
         if self.start_simulation:
             self.key_input()
             self.update_simulations(dt)
+            self.simulation_time += 1.98e4
 
     def key_input(self):
         if self.textBox.focus:
@@ -340,8 +348,8 @@ class Game:
             elif event.type == pygame.MOUSEBUTTONUP:
                 if event.button == 1 and self.holded_callback != None:
                     diff = [event.pos[0] - self.mouse_pre[0], self.mouse_pre[1] - event.pos[1]]
-                    self.objects[-1].v[0] = diff[0] * 4000
-                    self.objects[-1].v[1] = diff[1] * 4000
+                    self.objects[-1].v[0] = diff[0] * 1000
+                    self.objects[-1].v[1] = diff[1] * 1000
                     self.holded_callback = None
                 for i in range(len(self.buttons)):
                     if self.buttons[i].checkForInput(MenuMousePos):
@@ -364,11 +372,12 @@ class Game:
 game = Game()
 FPS = 60
 time = pygame.time.Clock()
+# 1s -> 6k h(S)
 while game.running:
     game.eventhandle()
     game.window.fill(0x111111)
     game.render()
-    game.update(1.0e4)
+    game.update(1.98e4)
     # game.update(1.0 / FPS)
     pygame.display.update()
     time.tick(FPS)
