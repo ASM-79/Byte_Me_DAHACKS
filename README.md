@@ -4,8 +4,8 @@ Controls:
 WASD - Move up, down, left, right
 Space - Start and stop the simulation
 
-Showcase Video:
-
+Showcase Video: (NOTE: In real application, windows will adjust automatically to fit screen.
+ 
 
 https://github.com/user-attachments/assets/b24b065a-6a9b-442b-af0d-bbca3fe2f5d7
 
