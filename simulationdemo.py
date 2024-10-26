@@ -159,7 +159,7 @@ class Game:
         ]
 
         self.sliders = [
-            Slider((940, 80), 100, 0.5, 2.0, 1.0),
+            Slider((840, 30), 100, 0.5, 2.0, 1.0),
         ]
 
         self.holded_callback = None
