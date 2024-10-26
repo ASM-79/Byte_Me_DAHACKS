@@ -5,7 +5,10 @@ from HUD.button import *
 import json
 from instantpos import *
 
-hardcode = {'Sun': [0, 0, 0.0, 0.0, 1.989e+30, 696340], 'mercury1': [1054424939.3301, -61299538896.77935, 39420.20912972592, 12495.454884449817, 3.3011e+23, 2439.7], 'venus1': [68398493435.107704, -76771820991.15689, 33913.7455697699, 12868.506551727365, 4.8675e+24, 6051.8], 'earth1': [121392171106.1312, 78675201368.78328, -17456.168464899947, 22366.22778518606, 5.97237e+24, 6371], 'mars1': [49925792525.30549, 204740417383.5171, -22713.50011224464, 6525.46094852942, 6.4171e+23, 3389.5], 'jupiter': [229264565681.17755, 665365767582.559, -12615.07585301929, 4101.341376243874, 1.8982e+27, 69911], 'saturn1': [1411977825282.14, -271282222896.31216, 865.4696030793367, 8891.707858123425, 5.6834e+26, 58232], 'uranus1': [1692594881843.4272, 2195866821687.7212, -5621.0076976069695, 3296.0637316781504, 8.681e+25, 25362], 'Neptune': [4471785354228.432, -75186220400.88289, 33.942090815791374, 5082.080306392246, 1.02413e+26, 24622]}
+# HEIGHT = 640
+# WIDTH = 960
+HEIGHT = 940
+WIDTH = 1440
 
 # METER = 0.0015
 # METER = 0.000015
@@ -115,7 +118,7 @@ class GameObject:
         epos = (self.apos[0] + self.a[0] * METER, self.apos[1] - self.a[1] * METER)
         pygame.draw.line(game.window, (255, 0, 0), (self.apos[0], self.apos[1]), epos, 2)
 
-    def apply_physics(self, dt: float):
+    def apply_physics(self, dt: float, game):
         self.render_a(game)
         self.v += self.a * dt
         self.pos += self.v * dt
@@ -132,9 +135,10 @@ class Game:
         self.simulation_time = 0
 
         pygame.init()
-        self.window = pygame.display.set_mode((self.width, self.height), pygame.RESIZABLE)
+        self.window = pygame.display.set_mode((self.width, self.height))
         self.window.fill(0x111111)
-        self.background = pygame.image.load('planets.png/background_simu.jpg')
+        # self.background = pygame.image.load('planets.png/background_simu.jpg')
+        # self.background = pygame.transform.scale(self.background, (10, 10))
 
         self.objects = []
 
@@ -143,17 +147,17 @@ class Game:
         self.buttons = [
                 Button(image=None, pos=(40, 80), input="START", font=pygame.font.Font(None, 24), baseColor="White", hoverColor="#61f255"),
                 Button(image=None, pos=(40, 120), input="SAVE", font=pygame.font.Font(None, 24), baseColor="White", hoverColor="#61f255"),
-                Button(image=None, pos=(self.width - 75, 180 - 60), input="SOLAR", font=pygame.font.Font(None, 24), baseColor="White", hoverColor="#61f255"),
-                Button(image=None, pos=(self.width - 75, 220 - 60), input="EARTH", font=pygame.font.Font(None, 24), baseColor="White", hoverColor="#61f255"),
-                Button(image=None, pos=(self.width - 75, 260 - 60), input="JUPITER", font=pygame.font.Font(None, 24), baseColor="White", hoverColor="#61f255"),
-                Button(image=None, pos=(self.width - 75, 300 - 60), input="MARS", font=pygame.font.Font(None, 24), baseColor="White", hoverColor="#61f255"),
-                Button(image=None, pos=(self.width - 75, 340 - 60), input="SUN", font=pygame.font.Font(None, 24), baseColor="White", hoverColor="#61f255"),
-                Button(image=None, pos=(self.width - 75, 380 - 60), input="MERCURY", font=pygame.font.Font(None, 24), baseColor="White", hoverColor="#61f255"),
-                Button(image=None, pos=(self.width - 75, 420 - 60), input="VENUS", font=pygame.font.Font(None, 24), baseColor="White", hoverColor="#61f255"),
-                Button(image=None, pos=(self.width - 75, 460 - 60), input="SATURN", font=pygame.font.Font(None, 24), baseColor="White", hoverColor="#61f255"),
-                Button(image=None, pos=(self.width - 75, 500 - 60), input="NEPTUNE", font=pygame.font.Font(None, 24), baseColor="White", hoverColor="#61f255"),
-                Button(image=None, pos=(self.width - 75, 540 - 60), input="URANUS", font=pygame.font.Font(None, 24), baseColor="White", hoverColor="#61f255"),
-                Button(image=None, pos=(self.width - 75, 580 - 60), input="ROCKET", font=pygame.font.Font(None, 24), baseColor="White", hoverColor="#61f255"),
+                Button(image=None, pos=(40, 180), input="SOLAR", font=pygame.font.Font(None, 24), baseColor="White", hoverColor="#61f255"),
+                Button(image=None, pos=(40, 220), input="EARTH", font=pygame.font.Font(None, 24), baseColor="White", hoverColor="#61f255"),
+                Button(image=None, pos=(40, 260), input="JUPITER", font=pygame.font.Font(None, 24), baseColor="White", hoverColor="#61f255"),
+                Button(image=None, pos=(40, 300), input="MARS", font=pygame.font.Font(None, 24), baseColor="White", hoverColor="#61f255"),
+                Button(image=None, pos=(40, 340), input="SUN", font=pygame.font.Font(None, 24), baseColor="White", hoverColor="#61f255"),
+                Button(image=None, pos=(40, 380), input="MERCURY", font=pygame.font.Font(None, 24), baseColor="White", hoverColor="#61f255"),
+                Button(image=None, pos=(40, 420), input="VENUS", font=pygame.font.Font(None, 24), baseColor="White", hoverColor="#61f255"),
+                Button(image=None, pos=(40, 460), input="SATURN", font=pygame.font.Font(None, 24), baseColor="White", hoverColor="#61f255"),
+                Button(image=None, pos=(40, 500), input="NEPTUNE", font=pygame.font.Font(None, 24), baseColor="White", hoverColor="#61f255"),
+                Button(image=None, pos=(40, 540), input="URANUS", font=pygame.font.Font(None, 24), baseColor="White", hoverColor="#61f255"),
+                Button(image=None, pos=(40, 580), input="ROCKET", font=pygame.font.Font(None, 24), baseColor="White", hoverColor="#61f255"),
         ]
         self.buttons_callback = [
                 self.start_button_impl,
@@ -178,8 +182,7 @@ class Game:
         self.holded_callback = None
 
     def setup_solar_sys(self):
-        # for key, vals in main().items():
-        for key, vals in hardcode.items():
+        for key, vals in main().items():
             self.objects.append(GameObject('planets.png/' + key + '.png', float(vals[0]), float(vals[1]), float(vals[4])))
             self.objects[-1].v[0] = float(vals[2])
             self.objects[-1].v[1] = float(vals[3])
@@ -284,6 +287,7 @@ class Game:
         UiText(self.window, 'zoom', pygame.font.Font(None, 24), (self.width - 150, 40), "#ffffff")
         for slider in self.sliders:
             slider.render(self.window)
+            # sllider
 
         weeks = self.simulation_time / (3600 * 24 * 7)
         UiText(self.window, f'{weeks:.{2}f}' + 'w', pygame.font.Font(None, 24), (self.width // 2, 30), "#61f255")
@@ -291,8 +295,7 @@ class Game:
         self.textBox.render(self.window)
 
     def render(self):
-        self.window.blit(self.background, (0, 0))
-
+        # self.window.blit(self.background, (0, 3))
         for obj in self.objects[::-1]:
             obj.render(self)
 
@@ -313,7 +316,7 @@ class Game:
                 objB.a += A * normal
 
         for obj in self.objects:
-            obj.apply_physics(dt)
+            obj.apply_physics(dt, self)
 
     def update(self, dt):
         if self.start_simulation:
@@ -356,8 +359,8 @@ class Game:
                 if event.button == 1 and self.holded_callback != None:
                     self.holded_callback()
                     self.mouse_pre = event.pos
-                    self.objects[-1].pos[0] = (event.pos[0] - game.width / 2.0 - SHIFT[0]) / METER
-                    self.objects[-1].pos[1] = (game.height / 2.0 - event.pos[1] - SHIFT[1]) / METER
+                    self.objects[-1].pos[0] = (event.pos[0] - self.width / 2.0 - SHIFT[0]) / METER
+                    self.objects[-1].pos[1] = (self.height / 2.0 - event.pos[1] - SHIFT[1]) / METER
             elif event.type == pygame.MOUSEBUTTONUP:
                 if event.button == 1 and self.holded_callback != None:
                     diff = [event.pos[0] - self.mouse_pre[0], self.mouse_pre[1] - event.pos[1]]
@@ -383,17 +386,17 @@ class Game:
                 self.width = event.w
                 self.height = event.h
 
-game = Game()
-FPS = 60
-time = pygame.time.Clock()
-# 1s -> 6k h(S)
-while game.running:
-    game.eventhandle()
-    game.window.fill(0x111111)
-    game.render()
-    game.update(1.98e4)
-    # game.update(1.0 / FPS)
-    pygame.display.update()
-    time.tick(FPS)
+def simulationStart(execute):
+    if(execute):
+        game = Game()
+        FPS = 60
+        time = pygame.time.Clock()
+        while game.running:
+            game.eventhandle()
+            game.window.fill(0x111111)
+            game.render()
+            game.update(1.98e4)
+            pygame.display.update()
+            time.tick(FPS)
 
-pygame.quit()
+        pygame.quit()
