@@ -53,6 +53,36 @@ class UiTextBox:
             return
         self.text += event.unicode
 
+class Slider:
+    def __init__(self, pos, length, min_val, max_val, start_val):
+        self.rect = pygame.Rect(pos[0], pos[1], length, 20)
+        self.min_val = min_val
+        self.max_val = max_val
+        self.value = start_val
+        self.dragging = False
+        self.slider_pos = pos[0] + int((start_val - min_val) / (max_val - min_val) * length)
+
+    def render(self, window):
+        pygame.draw.rect(window, (200, 200, 200), self.rect, 2)
+        pygame.draw.line(window, (100, 100, 100), (self.rect.x, self.rect.centery), (self.rect.x + self.rect.width, self.rect.centery), 2)
+        pygame.draw.circle(window, (255, 0, 0), (self.slider_pos, self.rect.centery), 8)
+
+    def handle_event(self, event):
+        if event.type == pygame.MOUSEBUTTONDOWN:
+            if self.rect.collidepoint(event.pos):
+                self.dragging = True
+
+        if event.type == pygame.MOUSEBUTTONUP:
+            self.dragging = False
+
+        if event.type == pygame.MOUSEMOTION and self.dragging:
+            if event.pos[0] >= self.rect.x and event.pos[0] <= self.rect.x + self.rect.width:
+                self.slider_pos = event.pos[0]
+                self.value = self.min_val + (self.slider_pos - self.rect.x) / self.rect.width * (self.max_val - self.min_val)
+                return self.value
+        return None
+
+
 class GameObject:
     def __init__(self, image_path, x: float = 0.0, y: float = 0.0, mass: float = 1.0, scale = 40.0):
         self.pos = np.array([x, y])
@@ -130,6 +160,11 @@ class Game:
                 self.uranus_button_impl,
                 self.rocket_button_impl
         ]
+
+        self.sliders = [
+            Slider((840, 30), 100, 0.5, 10.0, 1.0),
+        ]
+
         self.holded_callback = None
 
     def setup_solar_sys(self):
@@ -232,6 +267,9 @@ class Game:
             button.changeColor(MenuMousePos)
             button.update(self.window)
 
+        for slider in self.sliders:
+            slider.render(self.window)
+
         self.textBox.render(self.window)
 
     def render(self):
@@ -287,6 +325,11 @@ class Game:
                 self.running = False
                 return
             MenuMousePos = pygame.mouse.get_pos()
+            for slider in self.sliders:
+                value = slider.handle_event(event)
+                if value is not None:
+                    global METER
+                    METER = 2.14e-10 * (value)
             if event.type == pygame.MOUSEBUTTONDOWN:
                 self.textBox.focus = self.textBox.textRect.collidepoint(event.pos)
                 if event.button == 1 and self.holded_callback != None:
