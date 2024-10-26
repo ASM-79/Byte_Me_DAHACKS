@@ -1,6 +1,7 @@
 import pygame, sys
 from button import Button
 
+pygame.mixer.pre_init(44100, 16, 2, 4096)
 pygame.init()
 
 SCREEN = pygame.display.set_mode((1920, 1080))
@@ -11,6 +12,12 @@ HARISHMOON = pygame.image.load("images/harish2.png")
 JOEMOON = pygame.image.load("images/joe2.png")
 SPACEMAN = pygame.image.load("images/spacedab2.png")
 
+VolumeStd = 0.5
+
+pygame.mixer.music.load("bgmusic.mp3")
+pygame.mixer.music.set_volume(VolumeStd)
+pygame.mixer.music.play(-1)
+
 
 def get_font(size):
     return pygame.font.Font("images/TitleFont.ttf", size)
@@ -19,9 +26,9 @@ def get_font(size):
 def play():
     while True:
         playMousePos = pygame.mouse.get_pos()
-        SCREEN.fill("BLACK")
+        SCREEN.fill("black")
 
-        playText = get_font(40).render("Placeholder", True, "White")
+        playText = get_font(45).render("Test", True, "White")
         playRect = playText.get_rect(center=(760,260))
         SCREEN.blit(playText, playRect)
 
@@ -30,11 +37,54 @@ def play():
         playBack.changeColor(playMousePos)
         playBack.update(SCREEN)
 
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                sys.exit()
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                if playBack.checkForInput(playMousePos):
+                    main_menu()
+        pygame.display.update()
+
+def sound():
+    global VolumeStd
+    while True:
+        soundMousePos = pygame.mouse.get_pos()
+        
+        soundText = get_font(40).render(f"Volume: {int(VolumeStd * 100)}%", True, "White")
+        soundRect = soundText.get_rect(center=(960, 260))
+        SCREEN.fill("black")
+        SCREEN.blit(soundText, soundRect)
+
+        soundUp = Button(image=None, pos=(960, 360), input="+", font=get_font(50), baseColor="White", hoverColor="Green")
+        soundDown = Button(image=None, pos=(960, 460), input="-", font=get_font(50), baseColor="White", hoverColor="Red")
+        soundBack = Button(image=None, pos=(960, 560), input="Back", font=get_font(50), baseColor="White", hoverColor="Yellow")
+
+        for button in [soundUp, soundDown, soundBack]:
+            button.changeColor(soundMousePos)
+            button.update(SCREEN)
+
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                sys.exit()
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                if soundUp.checkForInput(soundMousePos):
+                    VolumeStd = min(1.0, VolumeStd + 0.1)  # Ensure volume doesn't exceed 1.0
+                    pygame.mixer.music.set_volume(VolumeStd)
+                if soundDown.checkForInput(soundMousePos):
+                    VolumeStd = max(0.0, VolumeStd - 0.1)  # Ensure volume doesn't go below 0.0
+                    pygame.mixer.music.set_volume(VolumeStd)
+                if soundBack.checkForInput(soundMousePos):
+                    main_menu()
+                    return
+
+        pygame.display.update()
+
 
 def main_menu():
     while True:
         SCREEN.blit(BG, (0,0))
-        SCREEN.blit(SPACEMAN, (450, 250))
         SCREEN.blit(AASHEERMOON, (-110, 60))
         SCREEN.blit(TRIMOON, (-50, 600) )
         SCREEN.blit(JOEMOON, (1250, 60))
@@ -45,11 +95,11 @@ def main_menu():
 
         playButton = Button(image=pygame.image.load("images/Play Rect.png"), pos=(750, 250), input="START", font=get_font(75), baseColor="White", hoverColor="#61f255")
         quitButton = Button(image=pygame.image.load("images/Quit Rect.png"), pos=(750, 650), input="EXIT", font=get_font(75), baseColor="White", hoverColor="#61f255")
-
+        soundButton = Button(image=pygame.image.load("images/Sound Rect.png"), pos=(750,450), input="SOUND", font=get_font(75), baseColor="White", hoverColor="#61f255")
 
         SCREEN.blit(menuText, menuRect)
 
-        for button in (playButton, quitButton):
+        for button in (playButton, quitButton, soundButton):
             button.changeColor(MenuMousePos)
             button.update(SCREEN)
 
@@ -60,6 +110,8 @@ def main_menu():
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if playButton.checkForInput(MenuMousePos):
                     play()
+                if soundButton.checkForInput(MenuMousePos):
+                    sound()
                 if quitButton.checkForInput(MenuMousePos):
                     pygame.quit()
                     sys.exit()
