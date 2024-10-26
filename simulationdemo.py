@@ -118,7 +118,36 @@ class Game:
         self.holded_callback = None
         self.edit_obj = None
 
-    # Add a method to handle zooming
+    def create_earth(self):
+        self.objects.append(GameObject('planets.png/earth1.png', 0.0, 0.0, 5.97e24, 39.6))
+
+    def earth_button_impl(self):
+        self.holded_callback = self.create_earth
+
+    def create_jupiter(self):
+        self.objects.append(GameObject('planets.png/jupiter.png', 0.0, 0.0, 9.3e24, 50))
+
+    def jupiter_button_impl(self):
+        self.holded_callback = self.create_jupiter
+
+    def create_moon(self):
+        self.objects.append(GameObject('planets.png/moon1.png', 0.0, 0.0, 7.3e22, 10))
+
+    def moon_button_impl(self):
+        self.holded_callback = self.create_moon
+
+    def create_mars(self):
+        self.objects.append(GameObject('planets.png/mars1.png', 0.0, 0.0, 3e23, 22))
+
+    def mars_button_impl(self):
+        self.holded_callback = self.create_mars
+
+    def create_rocket(self):
+        self.objects.append(GameObject('planets.png/Rocket Option 1.png', 0.0, 0.0, 5e4))
+
+    def rocket_button_impl(self):
+        self.holded_callback = self.create_rocket
+
     def handle_zoom(self, direction):
         global METER
         global zoom
@@ -143,7 +172,6 @@ class Game:
                     self.mouse_pre = event.pos
                     self.objects[-1].pos[0] = (event.pos[0] - game.width / 2.0 - SHIFT[0]) / METER
                     self.objects[-1].pos[1] = (game.height / 2.0 - event.pos[1] - SHIFT[1]) / METER
-                # Handle zoom in and out using scroll wheel
                 if event.button == 4:  # Scroll up
                     self.handle_zoom("in")
                 elif event.button == 5:  # Scroll down
@@ -169,6 +197,26 @@ class Game:
                     self.start_simulation = not self.start_simulation
                 self.textBox.update(event)
 
+    def local_scene(self):
+        data = get_scene('scenes/' + self.textBox.text + '.json')
+        if data == None:
+            return
+        self.objects = []
+        for key, vals in data.items():
+            self.objects.append(GameObject(key, vals[0], vals[1], vals[-1]))
+            self.objects[-1].v = np.array([vals[2], vals[3]])
+
+    def start_button_impl(self):
+        self.start_simulation = True
+
+    def save_button_impl(self):
+        if len(self.textBox.text) == 0:
+            return
+        data = {}
+        for obj in self.objects:
+            data[obj.image_path] = [obj.pos[0], obj.pos[1], obj.v[0], obj.v[1], obj.mass]
+        save_scene('scenes/' + self.textBox.text + '.json', data)
+
     def render_ui(self):
         MenuMousePos = pygame.mouse.get_pos()
         for button in self.buttons:
@@ -180,6 +228,9 @@ class Game:
         for obj in self.objects[::-1]:
             obj.render(self)
         self.render_ui()
+
+    def collision(self):
+        pass
 
     def update_simulations(self, dt):
         G = 6.67e-11
