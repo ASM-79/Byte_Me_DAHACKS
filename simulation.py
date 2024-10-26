@@ -30,6 +30,7 @@ class GameObject:
         # np.add(self.pos, self.v * dt, out = self.pos, casting='unsafe')
         self.v += self.a * dt
         self.pos += self.v * dt
+        self.a = 0
 
 class Game:
     def __init__(self):
