@@ -6,13 +6,16 @@ from datetime import datetime, timedelta
 def main():
     # List of Horizons codes and properties for the Sun and planets
     bodies = {
-        "Sun": {"code": "10", "mass": 1.989e30, "radius": 696340},
-        "mercury1": {"code": "199", "mass": 3.3011e23, "radius": 2439.7},
-        "venus1": {"code": "299", "mass": 4.8675e24, "radius": 6051.8},
-        "earth1": {"code": "399", "mass": 5.97237e24, "radius": 6371},
-        "mars1": {"code": "499", "mass": 6.4171e23, "radius": 3389.5},
-        "jupiter1": {"code": "599", "mass": 1.8982e27, "radius": 69911},
-    }
+    "Sun": {"code": "10", "mass": 1.989e30, "radius": 696340},
+    "mercury1": {"code": "199", "mass": 3.3011e23, "radius": 2439.7},
+    "venus1": {"code": "299", "mass": 4.8675e24, "radius": 6051.8},
+    "earth1": {"code": "399", "mass": 5.97237e24, "radius": 6371},
+    "mars1": {"code": "499", "mass": 6.4171e23, "radius": 3389.5},
+    "jupiter1": {"code": "599", "mass": 1.8982e27, "radius": 69911},
+    "saturn1": {"code": "699", "mass": 5.6834e26, "radius": 58232},
+    "uranus1": {"code": "799", "mass": 8.6810e25, "radius": 25362},
+    "neptune1": {"code": "899", "mass": 1.02413e26, "radius": 24622}
+}
 
     # API URL
     url = "https://ssd.jpl.nasa.gov/api/horizons.api"
