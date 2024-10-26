@@ -5,6 +5,8 @@ from HUD.button import *
 import json
 from instantpos import *
 
+hardcode = {'Sun': [0, 0, 0.0, 0.0, 1.989e+30, 696340], 'mercury1': [1054424939.3301, -61299538896.77935, 39420.20912972592, 12495.454884449817, 3.3011e+23, 2439.7], 'venus1': [68398493435.107704, -76771820991.15689, 33913.7455697699, 12868.506551727365, 4.8675e+24, 6051.8], 'earth1': [121392171106.1312, 78675201368.78328, -17456.168464899947, 22366.22778518606, 5.97237e+24, 6371], 'mars1': [49925792525.30549, 204740417383.5171, -22713.50011224464, 6525.46094852942, 6.4171e+23, 3389.5], 'jupiter': [229264565681.17755, 665365767582.559, -12615.07585301929, 4101.341376243874, 1.8982e+27, 69911], 'saturn1': [1411977825282.14, -271282222896.31216, 865.4696030793367, 8891.707858123425, 5.6834e+26, 58232], 'uranus1': [1692594881843.4272, 2195866821687.7212, -5621.0076976069695, 3296.0637316781504, 8.681e+25, 25362], 'Neptune': [4471785354228.432, -75186220400.88289, 33.942090815791374, 5082.080306392246, 1.02413e+26, 24622]}
+
 # METER = 0.0015
 # METER = 0.000015
 METER = 2.14e-10
@@ -66,7 +68,6 @@ class GameObject:
 
     def render(self, game):
         self.apos = [game.width / 2.0 + self.pos[0] * METER + SHIFT[0], game.height / 2.0 - self.pos[1] * METER - SHIFT[1]]
-        # pygame.draw.circle(game.window, tuple(self.color), pos, self.scale)
         game.window.blit(self.image, (self.apos[0], self.apos[1]))
         self.render_v(game)
 
@@ -79,8 +80,6 @@ class GameObject:
         pygame.draw.line(game.window, (255, 0, 0), (self.apos[0], self.apos[1]), epos, 2)
 
     def apply_physics(self, dt: float):
-        # np.add(self.v, self.a * dt, out = self.v, casting='unsafe')
-        # np.add(self.pos, self.v * dt, out = self.pos, casting='unsafe')
         self.render_a(game)
         self.v += self.a * dt
         self.pos += self.v * dt
@@ -100,13 +99,6 @@ class Game:
         self.window.fill(0x111111)
 
         self.objects = []
-        # self.rocket = GameObject('planets.png/Rocket Option 1.png', 0.0, 0.4e5)
-        # self.rocket.color[1] = 255
-        # self.rocket.v[1] = -4.3e4
-        # self.objects.append(self.rocket)
-        # self.objects.append(GameObject('planets.png/moon1.png', 1.3e5, 0.0, 4.87e24))
-        # self.objects.append(GameObject('planets.png/jupiter.png', -1.2e5, -1.3e5, 4.7e24))
-        # self.objects[-1].v[1] = 2.3e4
 
         self.textBox = UiTextBox(24, (10, 20, 140, 32), "#61f255")
 
@@ -141,7 +133,8 @@ class Game:
         self.holded_callback = None
 
     def setup_solar_sys(self):
-        for key, vals in main().items():
+        # for key, vals in main().items():
+        for key, vals in hardcode.items():
             self.objects.append(GameObject('planets.png/' + key + '.png', float(vals[0]), float(vals[1]), float(vals[4])))
             self.objects[-1].v[0] = float(vals[2])
             self.objects[-1].v[1] = float(vals[3])
@@ -304,8 +297,8 @@ class Game:
             elif event.type == pygame.MOUSEBUTTONUP:
                 if event.button == 1 and self.holded_callback != None:
                     diff = [event.pos[0] - self.mouse_pre[0], self.mouse_pre[1] - event.pos[1]]
-                    self.objects[-1].v[0] = diff[0] * 7000
-                    self.objects[-1].v[1] = diff[1] * 7000
+                    self.objects[-1].v[0] = diff[0] * 4000
+                    self.objects[-1].v[1] = diff[1] * 4000
                     self.holded_callback = None
                 for i in range(len(self.buttons)):
                     if self.buttons[i].checkForInput(MenuMousePos):
