@@ -29,6 +29,12 @@ def normalize(vec):
     d = vec[0] * vec[0] + vec[1] * vec[1]
     return np.array(vec / (d ** 0.5))
 
+class UiText:
+    def __init__(self, window, text, font, pos, baseColor):
+        text = font.render(text, True, baseColor)
+        text_rect = text.get_rect(center=pos)
+        window.blit(text, text_rect)
+
 class UiTextBox:
     def __init__(self, font_size, rect, color):
         self.focus = False
@@ -128,6 +134,7 @@ class Game:
         pygame.init()
         self.window = pygame.display.set_mode((self.width, self.height), pygame.RESIZABLE)
         self.window.fill(0x111111)
+        self.background = pygame.image.load('planets.png/background_simu.jpg')
 
         self.objects = []
 
@@ -136,20 +143,22 @@ class Game:
         self.buttons = [
                 Button(image=None, pos=(40, 80), input="START", font=pygame.font.Font(None, 24), baseColor="White", hoverColor="#61f255"),
                 Button(image=None, pos=(40, 120), input="SAVE", font=pygame.font.Font(None, 24), baseColor="White", hoverColor="#61f255"),
-                Button(image=None, pos=(40, 220), input="EARTH", font=pygame.font.Font(None, 24), baseColor="White", hoverColor="#61f255"),
-                Button(image=None, pos=(40, 260), input="JUPITER", font=pygame.font.Font(None, 24), baseColor="White", hoverColor="#61f255"),
-                Button(image=None, pos=(40, 300), input="MARS", font=pygame.font.Font(None, 24), baseColor="White", hoverColor="#61f255"),
-                Button(image=None, pos=(40, 340), input="SUN", font=pygame.font.Font(None, 24), baseColor="White", hoverColor="#61f255"),
-                Button(image=None, pos=(40, 380), input="MERCURY", font=pygame.font.Font(None, 24), baseColor="White", hoverColor="#61f255"),
-                Button(image=None, pos=(40, 420), input="VENUS", font=pygame.font.Font(None, 24), baseColor="White", hoverColor="#61f255"),
-                Button(image=None, pos=(40, 460), input="SATURN", font=pygame.font.Font(None, 24), baseColor="White", hoverColor="#61f255"),
-                Button(image=None, pos=(40, 500), input="NEPTUNE", font=pygame.font.Font(None, 24), baseColor="White", hoverColor="#61f255"),
-                Button(image=None, pos=(40, 540), input="URANUS", font=pygame.font.Font(None, 24), baseColor="White", hoverColor="#61f255"),
-                Button(image=None, pos=(40, 580), input="ROCKET", font=pygame.font.Font(None, 24), baseColor="White", hoverColor="#61f255"),
+                Button(image=None, pos=(self.width - 75, 180 - 60), input="SOLAR", font=pygame.font.Font(None, 24), baseColor="White", hoverColor="#61f255"),
+                Button(image=None, pos=(self.width - 75, 220 - 60), input="EARTH", font=pygame.font.Font(None, 24), baseColor="White", hoverColor="#61f255"),
+                Button(image=None, pos=(self.width - 75, 260 - 60), input="JUPITER", font=pygame.font.Font(None, 24), baseColor="White", hoverColor="#61f255"),
+                Button(image=None, pos=(self.width - 75, 300 - 60), input="MARS", font=pygame.font.Font(None, 24), baseColor="White", hoverColor="#61f255"),
+                Button(image=None, pos=(self.width - 75, 340 - 60), input="SUN", font=pygame.font.Font(None, 24), baseColor="White", hoverColor="#61f255"),
+                Button(image=None, pos=(self.width - 75, 380 - 60), input="MERCURY", font=pygame.font.Font(None, 24), baseColor="White", hoverColor="#61f255"),
+                Button(image=None, pos=(self.width - 75, 420 - 60), input="VENUS", font=pygame.font.Font(None, 24), baseColor="White", hoverColor="#61f255"),
+                Button(image=None, pos=(self.width - 75, 460 - 60), input="SATURN", font=pygame.font.Font(None, 24), baseColor="White", hoverColor="#61f255"),
+                Button(image=None, pos=(self.width - 75, 500 - 60), input="NEPTUNE", font=pygame.font.Font(None, 24), baseColor="White", hoverColor="#61f255"),
+                Button(image=None, pos=(self.width - 75, 540 - 60), input="URANUS", font=pygame.font.Font(None, 24), baseColor="White", hoverColor="#61f255"),
+                Button(image=None, pos=(self.width - 75, 580 - 60), input="ROCKET", font=pygame.font.Font(None, 24), baseColor="White", hoverColor="#61f255"),
         ]
         self.buttons_callback = [
                 self.start_button_impl,
                 self.save_button_impl,
+                self.solar_button_impl,
                 self.earth_button_impl,
                 self.jupiter_button_impl,
                 self.mars_button_impl,
@@ -174,6 +183,9 @@ class Game:
             self.objects.append(GameObject('planets.png/' + key + '.png', float(vals[0]), float(vals[1]), float(vals[4])))
             self.objects[-1].v[0] = float(vals[2])
             self.objects[-1].v[1] = float(vals[3])
+
+    def solar_button_impl(self):
+        self.setup_solar_sys()
 
     def create_earth(self):
         self.objects.append(GameObject('planets.png/earth1.png', 0.0, 0.0, 5.97e24, 30))
@@ -236,11 +248,11 @@ class Game:
         self.holded_callback = self.create_rocket
 
     def local_scene(self):
-        if self.textBox.text == '.solar':
-            self.objects = []
-            self.setup_solar_sys()
-            return
-
+        # if self.textBox.text == '.solar':
+        #     self.objects = []
+        #     self.setup_solar_sys()
+        #     self.simulation_time = 0
+        #     return
         data = get_scene('scenes/' + self.textBox.text + '.json')
         if data == None:
             return
@@ -248,6 +260,7 @@ class Game:
         for key, vals in data.items():
             self.objects.append(GameObject(key, vals[0], vals[1], vals[-1]))
             self.objects[-1].v = np.array([vals[2], vals[3]])
+        self.simulation_time = 0
 
     def start_button_impl(self):
         self.start_simulation = True
@@ -268,18 +281,18 @@ class Game:
             button.changeColor(MenuMousePos)
             button.update(self.window)
 
+        UiText(self.window, 'zoom', pygame.font.Font(None, 24), (self.width - 150, 40), "#ffffff")
         for slider in self.sliders:
             slider.render(self.window)
 
-        baseColor = "#61f255"
-        weeks =  self.simulation_time / (3600 * 24 * 7)
-        text = pygame.font.Font(None, 24).render(f'{weeks:.{2}f}' + 'w', True, baseColor)
-        text_rect = text.get_rect(center=(40, 200))
-        self.window.blit(text, text_rect)
+        weeks = self.simulation_time / (3600 * 24 * 7)
+        UiText(self.window, f'{weeks:.{2}f}' + 'w', pygame.font.Font(None, 24), (self.width // 2, 30), "#61f255")
 
         self.textBox.render(self.window)
 
     def render(self):
+        self.window.blit(self.background, (0, 0))
+
         for obj in self.objects[::-1]:
             obj.render(self)
 
@@ -359,6 +372,7 @@ class Game:
                     self.start_simulation = False
                     if len(self.textBox.text) == 0:
                         self.objects = []
+                        self.simulation_time = 0
                         return
                     self.local_scene()
                     return
