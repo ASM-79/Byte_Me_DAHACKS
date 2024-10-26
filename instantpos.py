@@ -7,11 +7,11 @@ def main():
     # List of Horizons codes and properties for the Sun and planets
     bodies = {
         "Sun": {"code": "10", "mass": 1.989e30, "radius": 696340},
-        "Mercury": {"code": "199", "mass": 3.3011e23, "radius": 2439.7},
-        "Venus": {"code": "299", "mass": 4.8675e24, "radius": 6051.8},
-        "Earth": {"code": "399", "mass": 5.97237e24, "radius": 6371},
-        "Mars": {"code": "499", "mass": 6.4171e23, "radius": 3389.5},
-        "Jupiter": {"code": "599", "mass": 1.8982e27, "radius": 69911},
+        "mercury1": {"code": "199", "mass": 3.3011e23, "radius": 2439.7},
+        "venus1": {"code": "299", "mass": 4.8675e24, "radius": 6051.8},
+        "earth1": {"code": "399", "mass": 5.97237e24, "radius": 6371},
+        "mars1": {"code": "499", "mass": 6.4171e23, "radius": 3389.5},
+        "jupiter1": {"code": "599", "mass": 1.8982e27, "radius": 69911},
     }
 
     # API URL
@@ -122,9 +122,9 @@ def main():
             }
 
     # Print the final frame with approximate instantaneous velocity and position
-    for body, data in final_frame.items():
-        print(f"{body}: Position = {data['position']}, Velocity = {data['velocity']}, Mass = {data['mass']}, Radius = {data['radius']}")
+    print(final_frame)  # Print output for verification
 
     return final_frame
 
-final_frame = main()
+if __name__ == "__main__":
+    final_frame = main()  # Assign and print the final result for clarity
