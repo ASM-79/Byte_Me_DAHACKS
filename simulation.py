@@ -6,7 +6,8 @@ import json
 from instantpos import *
 
 # METER = 0.0015
-METER = 0.00001
+# METER = 0.000015
+METER = 2.14e-10
 SHIFT = [0.0, 0.0]
 
 def save_scene(name, data):
@@ -112,13 +113,16 @@ class Game:
         self.buttons = [
                 Button(image=None, pos=(40, 80), input="START", font=pygame.font.Font(None, 24), baseColor="White", hoverColor="#61f255"),
                 Button(image=None, pos=(40, 120), input="SAVE", font=pygame.font.Font(None, 24), baseColor="White", hoverColor="#61f255"),
-                Button(image=None, pos=(40, 240), input="EARTH", font=pygame.font.Font(None, 24), baseColor="White", hoverColor="#61f255"),
-                Button(image=None, pos=(40, 280), input="JUPITER", font=pygame.font.Font(None, 24), baseColor="White", hoverColor="#61f255"),
-                Button(image=None, pos=(40, 320), input="MARS", font=pygame.font.Font(None, 24), baseColor="White", hoverColor="#61f255"),
-                Button(image=None, pos=(40, 360), input="SUN", font=pygame.font.Font(None, 24), baseColor="White", hoverColor="#61f255"),
-                Button(image=None, pos=(40, 400), input="MERCURY", font=pygame.font.Font(None, 24), baseColor="White", hoverColor="#61f255"),
-                Button(image=None, pos=(40, 440), input="VENUS", font=pygame.font.Font(None, 24), baseColor="White", hoverColor="#61f255"),
-                Button(image=None, pos=(40, 480), input="ROCKET", font=pygame.font.Font(None, 24), baseColor="White", hoverColor="#61f255"),
+                Button(image=None, pos=(40, 220), input="EARTH", font=pygame.font.Font(None, 24), baseColor="White", hoverColor="#61f255"),
+                Button(image=None, pos=(40, 260), input="JUPITER", font=pygame.font.Font(None, 24), baseColor="White", hoverColor="#61f255"),
+                Button(image=None, pos=(40, 300), input="MARS", font=pygame.font.Font(None, 24), baseColor="White", hoverColor="#61f255"),
+                Button(image=None, pos=(40, 340), input="SUN", font=pygame.font.Font(None, 24), baseColor="White", hoverColor="#61f255"),
+                Button(image=None, pos=(40, 380), input="MERCURY", font=pygame.font.Font(None, 24), baseColor="White", hoverColor="#61f255"),
+                Button(image=None, pos=(40, 420), input="VENUS", font=pygame.font.Font(None, 24), baseColor="White", hoverColor="#61f255"),
+                Button(image=None, pos=(40, 460), input="SATURN", font=pygame.font.Font(None, 24), baseColor="White", hoverColor="#61f255"),
+                Button(image=None, pos=(40, 500), input="NEPTUNE", font=pygame.font.Font(None, 24), baseColor="White", hoverColor="#61f255"),
+                Button(image=None, pos=(40, 540), input="URANUS", font=pygame.font.Font(None, 24), baseColor="White", hoverColor="#61f255"),
+                Button(image=None, pos=(40, 580), input="ROCKET", font=pygame.font.Font(None, 24), baseColor="White", hoverColor="#61f255"),
         ]
         self.buttons_callback = [
                 self.start_button_impl,
@@ -129,17 +133,18 @@ class Game:
                 self.sun_button_impl,
                 self.mercury_button_impl,
                 self.venus_button_impl,
+                self.saturn_button_impl,
+                self.neptune_button_impl,
+                self.uranus_button_impl,
                 self.rocket_button_impl
         ]
         self.holded_callback = None
-        # self.edit_obj = None
+
+    def setup_solar_sys(self):
         for key, vals in main().items():
-            self.objects.append(GameObject(key, vals[0].x, vals[0].y, vals[2], vals[3]))
-            self.objects[-1].v[0] = np.array([vals[1].x, vals[1].y])
-        # if planets == None:
-        #     return
-        # for key, vals in planets.items():
-        #     pass
+            self.objects.append(GameObject('planets.png/' + key + '.png', float(vals[0]), float(vals[1]), float(vals[4])))
+            self.objects[-1].v[0] = float(vals[2])
+            self.objects[-1].v[1] = float(vals[3])
 
     def create_earth(self):
         self.objects.append(GameObject('planets.png/earth1.png', 0.0, 0.0, 5.97e24, 30))
@@ -177,6 +182,24 @@ class Game:
     def venus_button_impl(self):
         self.holded_callback = self.create_venus
 
+    def create_saturn(self):
+        self.objects.append(GameObject('planets.png/saturn1.png', 0.0, 0.0, 5.683e26, 38))
+
+    def saturn_button_impl(self):
+        self.holded_callback = self.create_saturn
+
+    def create_neptune(self):
+        self.objects.append(GameObject('planets.png/Neptune.png', 0.0, 0.0, 1.024e26, 20))
+
+    def neptune_button_impl(self):
+        self.holded_callback = self.create_neptune
+
+    def create_uranus(self):
+        self.objects.append(GameObject('planets.png/uranus1.png', 0.0, 0.0, 8.681e25, 25))
+
+    def uranus_button_impl(self):
+        self.holded_callback = self.create_uranus
+
     def create_rocket(self):
         self.objects.append(GameObject('planets.png/Rocket Option 1.png', 0.0, 0.0, 5e4))
 
@@ -184,6 +207,11 @@ class Game:
         self.holded_callback = self.create_rocket
 
     def local_scene(self):
+        if self.textBox.text == '.solar':
+            self.objects = []
+            self.setup_solar_sys()
+            return
+
         data = get_scene('scenes/' + self.textBox.text + '.json')
         if data == None:
             return
@@ -304,7 +332,8 @@ while game.running:
     game.eventhandle()
     game.window.fill(0x111111)
     game.render()
-    game.update(1.0 / FPS)
+    game.update(1.0e4)
+    # game.update(1.0 / FPS)
     pygame.display.update()
     time.tick(FPS)
 
