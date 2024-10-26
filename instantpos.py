@@ -14,7 +14,7 @@ def main():
     "jupiter1": {"code": "599", "mass": 1.8982e27, "radius": 69911},
     "saturn1": {"code": "699", "mass": 5.6834e26, "radius": 58232},
     "uranus1": {"code": "799", "mass": 8.6810e25, "radius": 25362},
-    "neptune1": {"code": "899", "mass": 1.02413e26, "radius": 24622}
+    "Neptune": {"code": "899", "mass": 1.02413e26, "radius": 24622}
 }
 
     # API URL
