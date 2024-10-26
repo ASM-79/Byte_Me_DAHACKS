@@ -93,10 +93,7 @@ def main():
 
         frames.append(all_data.items())
         i += 1
+        for frame in frames:
+            for body_name, (x, y, mass, radius) in frame:
+                return (body_name, (x, y, mass, radius))
 
-    return frames
-
-frames = main()
-for frame in frames:
-    for body_name, (x, y, mass, radius) in frame:
-        print(body_name, (x, y, mass, radius))
