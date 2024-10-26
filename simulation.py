@@ -3,15 +3,11 @@ import numpy as np
 from HUD import *
 from HUD.button import *
 import json
+from instantpos import *
 
-METER = 0.0015
+# METER = 0.0015
+METER = 0.00001
 SHIFT = [0.0, 0.0]
-#
-# data = {
-#         # name      x       y       vx   vy     mass
-#         "moon1":   [1.3e5,  0.0,    0.0, 0.0,   4.87e24],
-#         "jupiter": [-1.2e5, -1.3e5, 0.0, 2.3e4, 4.7e24],
-# }
 
 def save_scene(name, data):
     with open(name, 'w') as write:
@@ -74,11 +70,11 @@ class GameObject:
         self.render_v(game)
 
     def render_v(self, game):
-        epos = (self.apos[0] + self.v[0] * 0.3 * METER, self.apos[1] - self.v[1] * 0.3 * METER)
+        epos = (self.apos[0] + self.v[0] * METER, self.apos[1] - self.v[1] * METER)
         pygame.draw.line(game.window, (0, 0, 255), (self.apos[0], self.apos[1]), epos, 2)
 
     def render_a(self, game):
-        epos = (self.apos[0] + self.a[0] * 0.3 * METER, self.apos[1] - self.a[1] * 0.3 * METER)
+        epos = (self.apos[0] + self.a[0] * METER, self.apos[1] - self.a[1] * METER)
         pygame.draw.line(game.window, (255, 0, 0), (self.apos[0], self.apos[1]), epos, 2)
 
     def apply_physics(self, dt: float):
@@ -118,45 +114,66 @@ class Game:
                 Button(image=None, pos=(40, 120), input="SAVE", font=pygame.font.Font(None, 24), baseColor="White", hoverColor="#61f255"),
                 Button(image=None, pos=(40, 240), input="EARTH", font=pygame.font.Font(None, 24), baseColor="White", hoverColor="#61f255"),
                 Button(image=None, pos=(40, 280), input="JUPITER", font=pygame.font.Font(None, 24), baseColor="White", hoverColor="#61f255"),
-                Button(image=None, pos=(40, 320), input="MOON", font=pygame.font.Font(None, 24), baseColor="White", hoverColor="#61f255"),
-                Button(image=None, pos=(40, 360), input="MARS", font=pygame.font.Font(None, 24), baseColor="White", hoverColor="#61f255"),
-                Button(image=None, pos=(40, 400), input="ROCKET", font=pygame.font.Font(None, 24), baseColor="White", hoverColor="#61f255"),
+                Button(image=None, pos=(40, 320), input="MARS", font=pygame.font.Font(None, 24), baseColor="White", hoverColor="#61f255"),
+                Button(image=None, pos=(40, 360), input="SUN", font=pygame.font.Font(None, 24), baseColor="White", hoverColor="#61f255"),
+                Button(image=None, pos=(40, 400), input="MERCURY", font=pygame.font.Font(None, 24), baseColor="White", hoverColor="#61f255"),
+                Button(image=None, pos=(40, 440), input="VENUS", font=pygame.font.Font(None, 24), baseColor="White", hoverColor="#61f255"),
+                Button(image=None, pos=(40, 480), input="ROCKET", font=pygame.font.Font(None, 24), baseColor="White", hoverColor="#61f255"),
         ]
         self.buttons_callback = [
                 self.start_button_impl,
                 self.save_button_impl,
                 self.earth_button_impl,
                 self.jupiter_button_impl,
-                self.moon_button_impl,
                 self.mars_button_impl,
+                self.sun_button_impl,
+                self.mercury_button_impl,
+                self.venus_button_impl,
                 self.rocket_button_impl
         ]
         self.holded_callback = None
         self.edit_obj = None
+        # planets = main()
+        # if planets == None:
+        #     return
+        # for key, vals in planets.items():
+        #     pass
 
     def create_earth(self):
-        self.objects.append(GameObject('planets.png/earth1.png', 0.0, 0.0, 5.97e24, 39.6))
+        self.objects.append(GameObject('planets.png/earth1.png', 0.0, 0.0, 5.97e24, 30))
 
     def earth_button_impl(self):
         self.holded_callback = self.create_earth
 
     def create_jupiter(self):
-        self.objects.append(GameObject('planets.png/jupiter.png', 0.0, 0.0, 9.3e24, 50))
+        self.objects.append(GameObject('planets.png/jupiter.png', 0.0, 0.0, 1.9e27, 40))
 
     def jupiter_button_impl(self):
         self.holded_callback = self.create_jupiter
 
-    def create_moon(self):
-        self.objects.append(GameObject('planets.png/moon1.png', 0.0, 0.0, 7.3e22, 10))
-
-    def moon_button_impl(self):
-        self.holded_callback = self.create_moon
-
     def create_mars(self):
-        self.objects.append(GameObject('planets.png/mars1.png', 0.0, 0.0, 3e23, 22))
+        self.objects.append(GameObject('planets.png/mars1.png', 0.0, 0.0, 6.39e23, 22))
 
     def mars_button_impl(self):
         self.holded_callback = self.create_mars
+
+    def create_sun(self):
+        self.objects.append(GameObject('planets.png/Sun.png', 0.0, 0.0, 1.98e30, 80))
+
+    def sun_button_impl(self):
+        self.holded_callback = self.create_sun
+
+    def create_mercury(self):
+        self.objects.append(GameObject('planets.png/mercury1.png', 0.0, 0.0, 3.285e23, 20))
+
+    def mercury_button_impl(self):
+        self.holded_callback = self.create_mercury
+
+    def create_venus(self):
+        self.objects.append(GameObject('planets.png/venus1.png', 0.0, 0.0, 4.867e24, 28))
+
+    def venus_button_impl(self):
+        self.holded_callback = self.create_venus
 
     def create_rocket(self):
         self.objects.append(GameObject('planets.png/Rocket Option 1.png', 0.0, 0.0, 5e4))
@@ -235,6 +252,11 @@ class Game:
             SHIFT[1] -= speed
         if keys[pygame.K_s]:
             SHIFT[1] += speed
+        global METER
+        if keys[pygame.K_j]:
+            METER *= 0.99
+        if keys[pygame.K_k]:
+            METER *= 1 / 0.99
 
     def eventhandle(self):
         for event in pygame.event.get():
@@ -252,8 +274,8 @@ class Game:
             elif event.type == pygame.MOUSEBUTTONUP:
                 if event.button == 1 and self.holded_callback != None:
                     diff = [event.pos[0] - self.mouse_pre[0], self.mouse_pre[1] - event.pos[1]]
-                    self.objects[-1].v[0] = diff[0] * 100
-                    self.objects[-1].v[1] = diff[1] * 100
+                    self.objects[-1].v[0] = diff[0] * 7000
+                    self.objects[-1].v[1] = diff[1] * 7000
                     self.holded_callback = None
                 for i in range(len(self.buttons)):
                     if self.buttons[i].checkForInput(MenuMousePos):
@@ -269,6 +291,9 @@ class Game:
                 if event.key == pygame.K_SPACE:
                     self.start_simulation = not self.start_simulation
                 self.textBox.update(event)
+            elif event.type == pygame.VIDEORESIZE:
+                self.width = event.w
+                self.height = event.h
 
 game = Game()
 FPS = 60
